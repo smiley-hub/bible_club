@@ -100,3 +100,55 @@ class PhotoValidationTests(TestCase):
         image = photo_file()
         validate_photo(image)
         self.assertEqual(image.tell(), 0)
+
+
+class HomepageTests(TestCase):
+    def test_empty_site_has_welcome_fonts_and_no_fake_photos(self):
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'A place to belong.')
+        self.assertContains(response, 'fonts/lora.ttf')
+        self.assertContains(response, 'fonts/source-sans-3.ttf')
+        self.assertContains(response, 'Community photos coming soon')
+        self.assertNotContains(response, 'data-slideshow')
+
+    def test_public_content_only_and_slide_order(self):
+        from .models import FAQ, HistoryMilestone
+        HomeSlide.objects.create(title='Hidden', image='hidden.png', alt_text='Hidden photo')
+        HomeSlide.objects.create(title='Second', image='second.png', alt_text='Second photo', is_active=True, display_order=2)
+        HomeSlide.objects.create(title='First', image='first.png', alt_text='First photo', is_active=True, display_order=1)
+        FAQ.objects.create(question='Private question', answer='Private answer')
+        FAQ.objects.create(question='Public question', answer='Public answer', is_published=True)
+        HistoryMilestone.objects.create(title='Private history', year=2020, story='Private story')
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'data-slideshow')
+        self.assertNotContains(response, 'Hidden photo')
+        self.assertNotContains(response, 'Private question')
+        self.assertNotContains(response, 'Private history')
+        self.assertContains(response, 'Public answer')
+        self.assertLess(response.content.index(b'First photo'), response.content.index(b'Second photo'))
+
+    def test_next_event_and_album_photos_obey_publication_rules(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from events.models import Event, EventAlbum, EventPhoto
+        now = timezone.now()
+        Event.objects.create(title='Draft event', slug='draft', starts_at=now + timedelta(days=1))
+        Event.objects.create(title='Public event', slug='public', status='published', starts_at=now + timedelta(days=2))
+        past = Event.objects.create(title='Past event', slug='past', status='published', starts_at=now - timedelta(days=2))
+        album = EventAlbum.objects.create(event=past, title='Our memories', is_published=True)
+        EventPhoto.objects.create(album=album, image='hidden.png', alt_text='Hidden album photo')
+        EventPhoto.objects.create(album=album, image='public.png', alt_text='Public album photo', is_active=True)
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'Public event')
+        self.assertNotContains(response, 'Draft event')
+        self.assertContains(response, 'Our memories')
+        self.assertContains(response, 'Public album photo')
+        self.assertNotContains(response, 'Hidden album photo')
+
+    def test_club_content_is_escaped_and_contact_works(self):
+        ClubProfile.objects.create(name='Our Club', welcome_text='<script>alert(1)</script>', contact_email='club@example.com')
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'Our Club')
+        self.assertContains(response, '&lt;script&gt;')
+        self.assertNotContains(response, '<script>alert(1)</script>')
+        self.assertContains(response, 'mailto:club@example.com')

@@ -21,5 +21,7 @@ Replace sample content with verified club information before publishing the site
 - Leaders can update event photos, history images, and organizer portraits.
 - Support captions and accessibility descriptions for photos.
 
-The Django environment is initialized; these website features are not yet built.
+The admin content workflow and responsive homepage are implemented. The homepage
+uses local Lora/Source Sans 3, leader-managed slides, and published club content.
+Separate public pages and the full history wheel remain planned.
 Do not regenerate or edit the approved mockups unless requested.

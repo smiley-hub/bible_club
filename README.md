@@ -3,7 +3,10 @@
 Django website with a private content admin, SQLite for local development,
 and local media storage. Leaders can manage club information, homepage slides,
 history milestones, organizers, FAQs, events, and photo albums. The public site
-currently remains a placeholder; its approved design will be implemented next.
+now includes a responsive homepage using locally hosted Lora and Source Sans 3,
+an accessible photo slideshow, next-gathering information, history excerpts,
+published albums, FAQs, and contact links. Separate story, event, and contact
+pages will follow; homepage navigation currently links to working page sections.
 
 See [the structure review and implementation plan](docs/architecture.md) for
 page routes, content models, leader-managed photos, and build order. Approved
@@ -31,6 +34,17 @@ Open http://127.0.0.1:8000/ and http://127.0.0.1:8000/admin/.
 Choose your own admin username and password when running `createsuperuser`.
 See [the leader guide](docs/leader-guide.md) for content editing and permissions.
 
+## Demo content
+
+To populate a local preview with clearly labeled sample records and stock photos:
+
+```powershell
+.\.venv\Scripts\python.exe manage.py seed_demo --download-images
+```
+
+See [demo data notes](docs/demo-data.md) for the included records, photo sources,
+and rerun behavior. Demo dates, history, and contact details are not real club data.
+
 ## Checks
 
 ```powershell
@@ -38,6 +52,21 @@ See [the leader guide](docs/leader-guide.md) for content editing and permissions
 .\.venv\Scripts\python.exe manage.py test core events
 .\.venv\Scripts\python.exe -m pip check
 ```
+
+## Homepage browser checks
+
+Optional development tools are in `requirements-dev.txt`. With the development
+server running on port 8000 and Microsoft Edge installed:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe scripts/check_homepage.py
+```
+
+The checks cover desktop/mobile layouts, local fonts, navigation, FAQ, slideshow
+controls, reduced motion, autoplay, and no-JavaScript navigation. Screenshots are
+written to the ignored `artifacts/homepage/` directory. Browser fixtures do not
+change club data or photos.
 
 ## Storage and deployment
 

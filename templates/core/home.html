@@ -1,5 +1,90 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<h1>Bible Club</h1>
-<p>The development environment is ready. Our community website is coming soon.</p>
+<div class="wrap">
+  <section class="hero" aria-labelledby="welcome-title">
+    <div class="hero-copy">
+      <p class="eyebrow">Faith. Friendship. Community.</p>
+      <h1 id="welcome-title">A place to belong.<br>A faith to explore.</h1>
+      <p class="intro">{% if club.welcome_text %}{{ club.welcome_text }}{% else %}Explore the Bible, ask honest questions, and make room for friendship. Discover life together at METU Bible Club.{% endif %}</p>
+      <a class="button" href="#gatherings">Find our next gathering <span aria-hidden="true">→</span></a>
+      <a class="quiet-link" href="#first-visit">New here? Start here <span aria-hidden="true">↘</span></a>
+    </div>
+    <div class="hero-visual" {% if slides %}data-slideshow role="region" aria-roledescription="carousel" aria-label="Life at our club"{% endif %}>
+      {% for slide in slides %}
+      <figure class="hero-slide" data-slide {% if not forloop.first %}hidden{% endif %} role="group" aria-roledescription="slide" aria-label="{{ forloop.counter }} of {{ slides|length }}">
+        <img src="{{ slide.image.url }}" alt="{{ slide.alt_text }}" width="960" height="900" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
+        {% if slide.caption %}<figcaption>{{ slide.caption }}</figcaption>{% endif %}
+      </figure>
+      {% empty %}
+      <div class="hero-empty">
+        <span class="empty-kicker">METU Bible Club</span>
+        <div class="empty-emblem"><img src="{% static 'images/book.svg' %}" width="110" height="94" alt=""></div>
+        <p>Our story is<br><em>still unfolding.</em></p>
+        <span class="empty-note">Community photos coming soon</span>
+      </div>
+      {% endfor %}
+      {% if slides|length > 1 %}
+      <div class="slide-controls" data-controls hidden>
+        <button type="button" data-previous aria-label="Previous photo">←</button>
+        <div class="slide-dots" aria-label="Choose a photo">{% for slide in slides %}<button type="button" data-go="{{ forloop.counter0 }}" aria-label="Show photo {{ forloop.counter }}" {% if forloop.first %}aria-current="true"{% endif %}></button>{% endfor %}</div>
+        <button type="button" data-next aria-label="Next photo">→</button>
+        <button type="button" class="pause-button" data-pause>Pause</button>
+      </div>
+      <p class="sr-only" data-slide-status aria-live="polite" aria-atomic="true"></p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section id="gatherings" class="gathering" aria-labelledby="gathering-title">
+    <div class="gathering-icon" aria-hidden="true">{% include 'includes/icon.html' with icon='calendar' %}</div>
+    <div class="gathering-title"><p class="eyebrow">Our next gathering</p><h2 id="gathering-title">{{ next_event.title|default:'Good things are ahead.' }}</h2></div>
+    <div class="gathering-when">{% if next_event.starts_at %}<time datetime="{{ next_event.starts_at|date:'c' }}">{{ next_event.starts_at|date:'D, j M' }} · {{ next_event.starts_at|date:'H:i' }}</time>{% else %}<span>Date and time to be announced</span>{% endif %}<span>{{ next_event.venue|default:'Meeting location coming soon' }}</span></div>
+    {% if next_event %}<a class="button gold" href="#next-event-details">View details <span aria-hidden="true">→</span></a>{% else %}<a class="button gold" href="#contact">Stay in touch <span aria-hidden="true">→</span></a>{% endif %}
+  </section>
+  {% if next_event %}<details class="event-details" id="next-event-details"><summary>About {{ next_event.title }} <span aria-hidden="true">+</span></summary><div>{{ next_event.description|linebreaks }}{% if next_event.directions_url %}<a class="text-link" href="{{ next_event.directions_url }}" target="_blank" rel="noopener noreferrer">Get directions ↗</a>{% endif %}</div></details>{% endif %}
+  {% if club.meeting_information %}<p class="meeting-note">{{ club.meeting_information|linebreaksbr }}</p>{% endif %}
+
+  <section class="first-visit section" id="first-visit" aria-labelledby="visit-title">
+    <div class="section-heading"><h2 id="visit-title">Your first visit</h2><p>A little curiosity is a good place to start.</p></div>
+    <div class="welcome-grid">
+      <article><span class="icon-disc">{% include 'includes/icon.html' with icon='people' %}</span><div><h3>Come as you are</h3><p>Bring your questions and get to know the community.</p></div></article>
+      <article><span class="icon-disc"><img src="{% static 'images/book.svg' %}" width="32" height="28" alt=""></span><div><h3>Explore together</h3><p>Open the Bible. Share perspectives. Discover more.</p></div></article>
+      <article><span class="icon-disc">{% include 'includes/icon.html' with icon='leaf' %}</span><div><h3>Find your people</h3><p>Make space for conversations and new friendships.</p></div></article>
+    </div>
+  </section>
+
+  <section class="story section" id="our-story" aria-labelledby="story-title">
+    <div class="story-medallion" aria-hidden="true"><div><img src="{% static 'images/book.svg' %}" width="64" height="56" alt=""><span>Faith & friendship</span><small>METU BIBLE CLUB</small></div></div>
+    <div class="story-copy"><p class="eyebrow">Our story</p><h2 id="story-title">A story still unfolding</h2><p>{% if club.purpose %}{{ club.purpose }}{% else %}Every friendship, conversation, and gathering becomes part of our story. Get to know the community, and be part of its next chapter.{% endif %}</p>
+      {% if milestones %}<a class="text-link" href="#story-chapters">Explore our story <span aria-hidden="true">→</span></a>{% else %}<a class="text-link" href="#contact">Get to know us <span aria-hidden="true">→</span></a>{% endif %}
+    </div>
+    {% if milestones %}<div class="story-chapters" id="story-chapters">{% for milestone in milestones %}<details><summary><span class="chapter-year">{{ milestone.year }}</span>{{ milestone.title }} <span class="expand" aria-hidden="true">+</span></summary><div class="chapter-body">{% if milestone.image %}<img src="{{ milestone.image.url }}" alt="{{ milestone.alt_text }}" loading="lazy" width="480" height="320">{% endif %}{{ milestone.story|linebreaks }}</div></details>{% endfor %}</div>{% endif %}
+  </section>
+
+  <section class="memories section" id="memories" aria-labelledby="memories-title">
+    <div class="section-heading"><h2 id="memories-title">Life together</h2><p>Little moments. Lasting memories.</p></div>
+    <div class="album-grid">
+      {% for album in albums %}<article class="album-card">
+        {% if album.cover_image %}<img class="album-cover" src="{{ album.cover_image.url }}" alt="{{ album.cover_alt_text }}" loading="lazy" width="640" height="360">{% else %}<div class="album-no-cover"><img src="{% static 'images/book.svg' %}" width="64" height="54" alt=""><span>A moment to remember</span></div>{% endif %}
+        <div class="album-copy"><p class="eyebrow">{{ album.event.starts_at|date:'j F Y' }}</p><h3>{{ album.title }}</h3>{% if album.recap %}<p>{{ album.recap|truncatewords:25 }}</p>{% endif %}
+          {% if album.photos.all %}<details class="album-photos"><summary>View photos <span aria-hidden="true">+</span></summary><div class="photo-grid">{% for photo in album.photos.all %}<figure><a href="{{ photo.image.url }}" target="_blank" rel="noopener"><img src="{{ photo.image.url }}" alt="{{ photo.alt_text }}" loading="lazy" width="320" height="240"></a>{% if photo.caption %}<figcaption>{{ photo.caption }}</figcaption>{% endif %}</figure>{% endfor %}</div></details>{% endif %}
+        </div>
+      </article>{% empty %}<div class="memories-empty"><span class="icon-disc">{% include 'includes/icon.html' with icon='people' %}</span><div><h3>There are memories to be made.</h3><p>Photos from our gatherings will find a home here. In the meantime, come be part of the next one.</p></div><a class="text-link" href="#gatherings">Find a gathering <span aria-hidden="true">→</span></a></div>{% endfor %}
+    </div>
+  </section>
+
+  <section class="faq section" aria-labelledby="faq-title">
+    <div class="section-heading"><h2 id="faq-title">A few things you might be wondering</h2><p>Start a conversation. Ask a question.</p></div>
+    <div class="faq-list">{% for faq in faqs %}<details><summary>{{ faq.question }}<span aria-hidden="true">+</span></summary><div>{{ faq.answer|linebreaks }}</div></details>{% empty %}
+      <details><summary>How do I find the next gathering?<span aria-hidden="true">+</span></summary><div><p>Check the <a href="#gatherings">next gathering</a> section for the latest date, time, and meeting location.</p></div></details>
+      <details><summary>Where can I learn about the club?<span aria-hidden="true">+</span></summary><div><p>Start with <a href="#our-story">our story</a>, or use the contact details below to ask about visiting.</p></div></details>
+    {% endfor %}</div>
+  </section>
+
+  <section class="contact-banner" id="contact" aria-labelledby="contact-title">
+    <div><p class="eyebrow">You are welcome here</p><h2 id="contact-title">Your first visit starts with hello.</h2><p>Have a question, or simply want to say hi? We would love to hear from you.</p></div>
+    <div class="contact-actions">{% if club.contact_email %}<a class="button" href="mailto:{{ club.contact_email }}">Say hello <span aria-hidden="true">→</span></a><a class="contact-email" href="mailto:{{ club.contact_email }}">{{ club.contact_email }}</a>{% endif %}{% if club.social_url %}<a class="{% if club.contact_email %}text-link{% else %}button{% endif %}" href="{{ club.social_url }}" target="_blank" rel="noopener noreferrer">Find us online <span aria-hidden="true">↗</span></a>{% endif %}{% if not club.contact_email and not club.social_url %}<p class="contact-pending">Club contact details will be shared here soon.</p>{% endif %}</div>
+  </section>
+</div>
 {% endblock %}

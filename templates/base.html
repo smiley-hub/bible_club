@@ -1,9 +1,21 @@
-<!doctype html>
+{% load static %}<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}Bible Club{% endblock %}</title>
+<title>{% block title %}{{ club.name|default:'METU Bible Club' }} — Faith, friendship & community{% endblock %}</title>
+<meta name="description" content="Discover METU Bible Club. Explore our community, find the next gathering, and get in touch.">
+<meta name="theme-color" content="#214c3b">
+<link rel="icon" href="{% static 'images/book.svg' %}" type="image/svg+xml">
+<link rel="preload" href="{% static 'fonts/lora.ttf' %}" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="{% static 'fonts/source-sans-3.ttf' %}" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<script src="{% static 'js/home.js' %}" defer></script>
 </head>
-<body><main>{% block content %}{% endblock %}</main></body>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+{% include 'includes/navigation.html' %}
+<main id="main">{% block content %}{% endblock %}</main>
+{% include 'includes/footer.html' %}
+</body>
 </html>

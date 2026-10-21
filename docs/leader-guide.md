@@ -55,6 +55,13 @@ must be handled separately. Back up the database and media folder together.
 
 ## Current milestone
 
-The admin editing workflow works. Public pages still show the starter homepage;
-slideshow, history-wheel, and gallery rendering will be built next. The generated
+The admin editing workflow and public homepage work. Active homepage slides
+appear in display order; with two or more, visitors get arrows, position controls,
+and autoplay with a pause button. Reduced-motion preferences disable autoplay
+initially. With no active slides, a designed placeholder appears instead.
+
+The homepage shows the next published gathering, published history excerpts,
+the two most recent eligible albums with active photos, published FAQs, and the
+profile's contact links. Its navigation currently points to sections on the same
+page. Separate pages and the full history wheel are still to come. The generated
 admin mockup is a visual reference, not the current Django admin theme.
