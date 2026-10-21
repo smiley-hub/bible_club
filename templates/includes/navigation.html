@@ -6,10 +6,10 @@
   </a>
   <button class="menu-toggle" type="button" aria-controls="primary-nav" aria-expanded="false" hidden>Menu <span aria-hidden="true">☰</span></button>
   <nav id="primary-nav" aria-label="Main navigation">
-    <a href="{% url 'core:home' %}" aria-current="page">Home</a>
-    <a href="#our-story">Our Story</a>
-    <a href="#gatherings">Events</a>
-    <a href="#contact">Get in Touch</a>
-    <a class="button small" href="#gatherings">Join us <span aria-hidden="true">↗</span></a>
+    <a href="{% url 'core:home' %}" {% if request.resolver_match.url_name == "home" %}aria-current="page"{% endif %}>Home</a>
+    <a href="{% url 'core:our_story' %}" {% if request.resolver_match.url_name == "our_story" %}aria-current="page"{% endif %}>Our Story</a>
+    <a href="{% url 'core:home' %}#gatherings">Events</a>
+    <a href="{% url 'core:home' %}#contact">Get in Touch</a>
+    <a class="button small" href="{% url 'core:home' %}#gatherings">Join us <span aria-hidden="true">↗</span></a>
   </nav>
 </header>

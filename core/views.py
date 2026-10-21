@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.db.models import Prefetch
 
 from events.models import Event, EventAlbum, EventPhoto
-from .models import ClubProfile, FAQ, HistoryMilestone, HomeSlide
+from .models import ClubProfile, FAQ, HistoryMilestone, HomeSlide, Organizer
 
 
 def home(request):
@@ -16,4 +16,12 @@ def home(request):
         'milestones': HistoryMilestone.objects.filter(is_published=True),
         'albums': albums,
         'faqs': FAQ.objects.filter(is_published=True),
+    })
+
+
+def our_story(request):
+    return render(request, 'core/our_story.html', {
+        'club': ClubProfile.objects.first(),
+        'milestones': HistoryMilestone.objects.filter(is_published=True),
+        'organizers': Organizer.objects.filter(is_active=True),
     })

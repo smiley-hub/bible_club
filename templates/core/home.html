@@ -57,7 +57,7 @@
   <section class="story section" id="our-story" aria-labelledby="story-title">
     <div class="story-medallion" aria-hidden="true"><div><img src="{% static 'images/book.svg' %}" width="64" height="56" alt=""><span>Faith & friendship</span><small>METU BIBLE CLUB</small></div></div>
     <div class="story-copy"><p class="eyebrow">Our story</p><h2 id="story-title">A story still unfolding</h2><p>{% if club.purpose %}{{ club.purpose }}{% else %}Every friendship, conversation, and gathering becomes part of our story. Get to know the community, and be part of its next chapter.{% endif %}</p>
-      {% if milestones %}<a class="text-link" href="#story-chapters">Explore our story <span aria-hidden="true">→</span></a>{% else %}<a class="text-link" href="#contact">Get to know us <span aria-hidden="true">→</span></a>{% endif %}
+      {% if milestones %}<a class="text-link" href="{% url 'core:our_story' %}">Explore our story <span aria-hidden="true">→</span></a>{% else %}<a class="text-link" href="#contact">Get to know us <span aria-hidden="true">→</span></a>{% endif %}
     </div>
     {% if milestones %}<div class="story-chapters" id="story-chapters">{% for milestone in milestones %}<details><summary><span class="chapter-year">{{ milestone.year }}</span>{{ milestone.title }} <span class="expand" aria-hidden="true">+</span></summary><div class="chapter-body">{% if milestone.image %}<img src="{{ milestone.image.url }}" alt="{{ milestone.alt_text }}" loading="lazy" width="480" height="320">{% endif %}{{ milestone.story|linebreaks }}</div></details>{% endfor %}</div>{% endif %}
   </section>

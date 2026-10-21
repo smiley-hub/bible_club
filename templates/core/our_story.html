@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Our Story — {{ club.name|default:'METU Bible Club' }}{% endblock %}
+{% block description %}Explore the story of METU Bible Club, the chapters of our journey, and the people who welcome you.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/story.css' %}"><script src="{% static 'js/story.js' %}" defer></script>{% endblock %}
+{% block content %}
+<div class="wrap story-page">
+  <header class="story-intro"><p class="eyebrow">Our story</p><h1>Every chapter brought us here.</h1><p>Faith, friendship, and the moments that make a community.</p></header>
+  {% if milestones %}
+  <section class="journey" data-journey aria-label="Our history">
+    <div class="journey-navigation" data-journey-nav hidden>
+      <p class="wheel-instruction">Choose a year. Discover a chapter.</p>
+      <div class="history-wheel">
+        <div class="wheel-ring" aria-hidden="true"></div>
+        <div class="wheel-center" aria-hidden="true"><img src="{% static 'images/book.svg' %}" width="82" height="70" alt=""><span>Our journey</span><i></i><small data-wheel-year></small></div>
+        <div class="wheel-orbit" data-wheel-orbit role="group" aria-label="Choose a history milestone">
+          {% for milestone in milestones %}<button type="button" class="wheel-stop" data-chapter-button="{{ forloop.counter0 }}" data-year="{{ milestone.year }}" aria-controls="chapter-{{ milestone.pk }}" aria-label="{{ milestone.year }}: {{ milestone.title }}" aria-pressed="false"><span>{{ milestone.year }}</span></button>{% endfor %}
+        </div>
+      </div>
+      <div class="journey-controls"><button type="button" class="journey-previous" data-history-previous aria-label="Previous chapter"><span aria-hidden="true">←</span> Previous</button><span data-chapter-counter></span><button type="button" class="button" data-history-next aria-label="Next chapter">Next <span aria-hidden="true">→</span></button></div>
+      <label class="chapter-select-label" for="chapter-select">Jump to a chapter</label>
+      <select id="chapter-select" data-chapter-select>{% for milestone in milestones %}<option value="{{ forloop.counter0 }}">{{ milestone.year }} — {{ milestone.title }}</option>{% endfor %}</select>
+      <p class="sr-only" data-history-status aria-live="polite" aria-atomic="true"></p>
+    </div>
+    <div class="journey-chapters">
+      {% for milestone in milestones %}<article class="journey-chapter" id="chapter-{{ milestone.pk }}" data-chapter aria-labelledby="chapter-title-{{ milestone.pk }}">
+        {% if milestone.image %}<img class="chapter-image" src="{{ milestone.image.url }}" alt="{{ milestone.alt_text }}" width="800" height="520" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>{% else %}<div class="chapter-placeholder" aria-hidden="true"><span>{{ milestone.year }}</span><img src="{% static 'images/book.svg' %}" width="78" height="66" alt=""><p>One chapter.<br>A part of our story.</p></div>{% endif %}
+        <p class="eyebrow">Chapter {{ forloop.counter|stringformat:'02d' }}</p><h2 id="chapter-title-{{ milestone.pk }}">{{ milestone.title }}</h2><span class="chapter-date">{{ milestone.year }}</span><div class="chapter-story">{{ milestone.story|linebreaks }}</div>
+      </article>{% endfor %}
+    </div>
+  </section>
+  {% else %}<section class="story-awaiting"><img src="{% static 'images/book.svg' %}" width="76" height="65" alt=""><h2>Our story is still unfolding.</h2><p>We are gathering the stories and photographs that tell our journey. Come back soon to explore them.</p><a class="text-link" href="{% url 'core:home' %}#contact">Get to know us <span aria-hidden="true">→</span></a></section>{% endif %}
+
+  <section class="story-foundations" aria-labelledby="foundations-title"><div class="story-section-title"><p class="eyebrow">Faith & fellowship</p><h2 id="foundations-title">What brings us together</h2></div><div class="foundations-grid">
+    <article><span class="icon-disc"><img src="{% static 'images/book.svg' %}" width="32" height="28" alt=""></span><div><h3>Our purpose</h3>{% if club.purpose %}{{ club.purpose|linebreaks }}{% else %}<p>Our club introduction will be shared here soon.</p>{% endif %}</div></article>
+    <article><span class="icon-disc">{% include 'includes/icon.html' with icon='leaf' %}</span><div><h3>Our beliefs</h3>{% if club.beliefs %}{{ club.beliefs|linebreaks }}{% else %}<p>Our statement of faith will be shared here soon. You are welcome to ask us about the club.</p>{% endif %}</div></article>
+  </div></section>
+
+  <section class="story-organizers" aria-labelledby="organizers-title"><div class="story-section-title"><p class="eyebrow">A familiar face</p><h2 id="organizers-title">Meet the people who welcome you</h2></div><div class="organizers-grid">
+    {% for organizer in organizers %}<article class="organizer-card">{% if organizer.image %}<img class="organizer-portrait" src="{{ organizer.image.url }}" alt="{{ organizer.alt_text }}" loading="lazy" width="500" height="400">{% else %}<div class="organizer-placeholder" aria-hidden="true">{% include 'includes/icon.html' with icon='people' %}<span>A face to know</span></div>{% endif %}<h3>{{ organizer.name }}</h3><p>{{ organizer.role }}</p></article>{% empty %}<p class="organizer-empty">Introductions are on their way. In the meantime, <a href="{% url 'core:home' %}#contact">get in touch</a> to ask about visiting.</p>{% endfor %}
+  </div></section>
+  <section class="contact-banner story-invitation"><div><p class="eyebrow">The next chapter</p><h2>There is a place for you in this story.</h2><p>Come along, ask a question, and get to know us.</p></div><a class="button" href="{% url 'core:home' %}#gatherings">Find our next gathering <span aria-hidden="true">→</span></a></section>
+</div>
+{% endblock %}

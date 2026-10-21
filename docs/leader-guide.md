@@ -62,6 +62,13 @@ initially. With no active slides, a designed placeholder appears instead.
 
 The homepage shows the next published gathering, published history excerpts,
 the two most recent eligible albums with active photos, published FAQs, and the
-profile's contact links. Its navigation currently points to sections on the same
-page. Separate pages and the full history wheel are still to come. The generated
+profile's contact links. Our Story now has its own page at `/our-story/` with the
+history wheel, purpose/beliefs from Club profiles, and active organizer cards.
+History milestones follow display order (lower first); set that order to match
+the chronology you want visitors to follow. Only published milestones appear.
+Upload an image and alt text on each milestone or organizer to replace its placeholder.
+The wheel supports taps, previous/next, arrow keys, and a chapter selector. More
+than eight chapters are grouped into successive wheel sections. Without JavaScript,
+all chapters remain readable in order. Events and contact still link to homepage
+sections until their dedicated pages are built. The generated
 admin mockup is a visual reference, not the current Django admin theme.

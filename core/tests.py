@@ -102,6 +102,38 @@ class PhotoValidationTests(TestCase):
         self.assertEqual(image.tell(), 0)
 
 
+class StoryPageTests(TestCase):
+    def test_empty_story_and_navigation(self):
+        response = self.client.get(reverse('core:our_story'))
+        self.assertContains(response, 'Every chapter brought us here.')
+        self.assertContains(response, 'Our story is still unfolding.')
+        self.assertNotContains(response, 'data-journey aria-label')
+        self.assertContains(response, 'href="/#gatherings"')
+        self.assertContains(response, 'aria-current="page">Our Story')
+
+    def test_published_milestones_and_active_organizers_only(self):
+        from .models import HistoryMilestone, Organizer
+        HistoryMilestone.objects.create(title='Hidden chapter', year=2020, story='Not public')
+        HistoryMilestone.objects.create(title='Later chapter', year=2024, story='Later story', is_published=True, display_order=2)
+        HistoryMilestone.objects.create(title='First chapter', year=2022, story='First story', is_published=True, display_order=1)
+        Organizer.objects.create(name='Private organizer', role='Leader')
+        Organizer.objects.create(name='Public organizer', role='Coordinator', is_active=True)
+        response = self.client.get(reverse('core:our_story'))
+        self.assertContains(response, 'First story')
+        self.assertContains(response, 'Later story')
+        self.assertContains(response, 'Public organizer')
+        self.assertNotContains(response, 'Hidden chapter')
+        self.assertNotContains(response, 'Private organizer')
+        self.assertLess(response.content.index(b'First chapter'), response.content.index(b'Later chapter'))
+
+    def test_profile_content_is_present_and_escaped(self):
+        ClubProfile.objects.create(purpose='Our shared purpose', beliefs='<script>unsafe()</script>')
+        response = self.client.get(reverse('core:our_story'))
+        self.assertContains(response, 'Our shared purpose')
+        self.assertContains(response, '&lt;script&gt;')
+        self.assertNotContains(response, '<script>unsafe()</script>')
+
+
 class HomepageTests(TestCase):
     def test_empty_site_has_welcome_fonts_and_no_fake_photos(self):
         response = self.client.get(reverse('core:home'))

@@ -1,6 +1,6 @@
 {% load static %}
 <footer class="site-footer wrap">
   <a class="brand" href="{% url 'core:home' %}"><img src="{% static 'images/book.svg' %}" width="40" height="35" alt=""><span>{{ club.name|default:'METU Bible Club' }}</span></a>
-  <nav aria-label="Footer navigation"><a href="#our-story">Our Story</a><a href="#gatherings">Events</a><a href="#contact">Get in Touch</a></nav>
+  <nav aria-label="Footer navigation"><a href="{% url 'core:our_story' %}">Our Story</a><a href="{% url 'core:home' %}#gatherings">Events</a><a href="{% url 'core:home' %}#contact">Get in Touch</a></nav>
   <a class="leader-link" href="{% url 'admin:index' %}">Leader login <span aria-hidden="true">↗</span></a>
 </footer>

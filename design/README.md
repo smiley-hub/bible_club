@@ -23,5 +23,6 @@ Replace sample content with verified club information before publishing the site
 
 The admin content workflow and responsive homepage are implemented. The homepage
 uses local Lora/Source Sans 3, leader-managed slides, and published club content.
-Separate public pages and the full history wheel remain planned.
+Our Story now includes the interactive history wheel, purpose/beliefs, and organizers.
+Dedicated event, album, and contact pages remain planned.
 Do not regenerate or edit the approved mockups unless requested.

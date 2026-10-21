@@ -5,8 +5,9 @@ and local media storage. Leaders can manage club information, homepage slides,
 history milestones, organizers, FAQs, events, and photo albums. The public site
 now includes a responsive homepage using locally hosted Lora and Source Sans 3,
 an accessible photo slideshow, next-gathering information, history excerpts,
-published albums, FAQs, and contact links. Separate story, event, and contact
-pages will follow; homepage navigation currently links to working page sections.
+published albums, FAQs, and contact links. Our Story at `/our-story/` includes
+an interactive history wheel, purpose and beliefs, and organizer profiles.
+Event and contact navigation currently links back to working homepage sections.
 
 See [the structure review and implementation plan](docs/architecture.md) for
 page routes, content models, leader-managed photos, and build order. Approved
@@ -61,6 +62,7 @@ server running on port 8000 and Microsoft Edge installed:
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe scripts/check_homepage.py
+.\.venv\Scripts\python.exe scripts/check_story.py
 ```
 
 The checks cover desktop/mobile layouts, local fonts, navigation, FAQ, slideshow
