@@ -1,7 +1,13 @@
 # Bible Club
 
-Django website foundation with a private admin, SQLite for local development,
-and local media storage. The public site and event editing will be built next.
+Django website with a private content admin, SQLite for local development,
+and local media storage. Leaders can manage club information, homepage slides,
+history milestones, organizers, FAQs, events, and photo albums. The public site
+currently remains a placeholder; its approved design will be implemented next.
+
+See [the structure review and implementation plan](docs/architecture.md) for
+page routes, content models, leader-managed photos, and build order. Approved
+visual concepts and requirements are in [design/README.md](design/README.md).
 
 ## Local development (PowerShell)
 
@@ -16,17 +22,20 @@ creates this file with a random key; do not overwrite it when continuing locally
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py migrate
+.\.venv\Scripts\python.exe manage.py setup_leaders
 .\.venv\Scripts\python.exe manage.py createsuperuser
 .\.venv\Scripts\python.exe manage.py runserver
 ```
 
 Open http://127.0.0.1:8000/ and http://127.0.0.1:8000/admin/.
 Choose your own admin username and password when running `createsuperuser`.
+See [the leader guide](docs/leader-guide.md) for content editing and permissions.
 
 ## Checks
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py check
+.\.venv\Scripts\python.exe manage.py test core events
 .\.venv\Scripts\python.exe -m pip check
 ```
 
