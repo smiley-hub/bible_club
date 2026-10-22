@@ -184,3 +184,58 @@ class HomepageTests(TestCase):
         self.assertContains(response, '&lt;script&gt;')
         self.assertNotContains(response, '<script>alert(1)</script>')
         self.assertContains(response, 'mailto:club@example.com')
+
+class ContactPageTests(TestCase):
+    def setUp(self):
+        self.club = ClubProfile.objects.create(contact_email='club@example.com', social_url='https://example.com/club', meeting_information='Monday at 7pm')
+        self.data = {'name': 'Visitor', 'email': 'visitor@example.com', 'topic': 'visit', 'message': 'Where is the next gathering?', 'website': ''}
+
+    def test_public_details_and_draft_faq(self):
+        from .models import FAQ
+        FAQ.objects.create(question='Private question', answer='Private answer')
+        response = self.client.get(reverse('core:contact'))
+        self.assertContains(response, 'mailto:club@example.com')
+        self.assertContains(response, 'Monday at 7pm')
+        self.assertNotContains(response, 'Private answer')
+
+    @override_settings(DEBUG=True, CONTACT_FORM_ENABLED=False)
+    def test_preview_and_validation(self):
+        from django.core import mail
+        response = self.client.post(reverse('core:contact'), self.data, follow=True)
+        self.assertContains(response, 'Your message has not been sent')
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(reverse('core:contact'), {**self.data, 'email': 'invalid'})
+        self.assertContains(response, 'Enter a valid email address')
+        self.assertContains(response, self.data['message'])
+
+    @override_settings(CONTACT_FORM_ENABLED=True, EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+    def test_delivery_reply_to_and_repeat_limit(self):
+        from django.core import mail
+        response = self.client.post(reverse('core:contact'), self.data, follow=True)
+        self.assertContains(response, 'Your message has been sent')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['club@example.com'])
+        self.assertEqual(mail.outbox[0].reply_to, ['visitor@example.com'])
+        response = self.client.post(reverse('core:contact'), self.data)
+        self.assertContains(response, 'Please wait a minute')
+        self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(CONTACT_FORM_ENABLED=True, EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+    def test_delivery_failure_and_honeypot(self):
+        from unittest.mock import patch
+        from smtplib import SMTPException
+        with patch('django.core.mail.EmailMessage.send', side_effect=SMTPException('Unavailable')) as send:
+            response = self.client.post(reverse('core:contact'), self.data)
+            self.assertContains(response, 'Your message could not be sent')
+            self.assertContains(response, self.data['message'])
+            self.client.post(reverse('core:contact'), {**self.data, 'website': 'spam'})
+            self.assertEqual(send.call_count, 1)
+
+    @override_settings(DEBUG=False, CONTACT_FORM_ENABLED=False)
+    def test_production_disabled_and_empty_contact(self):
+        response = self.client.post(reverse('core:contact'), self.data)
+        self.assertNotContains(response, 'Your message has been sent')
+        self.assertNotContains(response, '<form')
+        ClubProfile.objects.all().delete()
+        response = self.client.get(reverse('core:contact'))
+        self.assertContains(response, 'Our email address will be shared here soon')

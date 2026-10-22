@@ -1,0 +1,28 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+{% block title %}Get in Touch — {{ club.name|default:'METU Bible Club' }}{% endblock %}
+{% block description %}Ask about visiting METU Bible Club, find meeting information, and get in touch with our community.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/contact.css' %}?v=1">{% endblock %}
+{% block content %}<div class="wrap contact-page">
+<header class="contact-intro"><p class="eyebrow">Get in touch</p><h1>Your first visit starts with hello.</h1><p>Have a question or thinking of joining us? We would love to hear from you.</p></header>
+{% for message in messages %}<div class="contact-notice" role="status">{{ message }}</div>{% endfor %}
+<div class="contact-layout">
+<section class="contact-welcome" aria-labelledby="welcome-title">
+{% if contact_photo %}<figure class="contact-photo"><img src="{{ contact_photo.image.url }}" alt="{{ contact_photo.alt_text }}" width="800" height="540">{% if contact_photo.caption %}<figcaption>{{ contact_photo.caption }}</figcaption>{% endif %}</figure>{% else %}<div class="contact-emblem" aria-hidden="true"><img src="{% static 'images/book.svg' %}" width="80" height="70" alt=""><span>Faith. Friendship. Community.</span></div>{% endif %}
+<h2 id="welcome-title">Let us help you feel at home.</h2><p>Ask about our gatherings, finding the room, or coming along for the first time.</p>
+<div class="contact-method"><span class="contact-symbol" aria-hidden="true">@</span><div><h3>Club email</h3>{% if club.contact_email %}<a href="mailto:{{ club.contact_email }}">{{ club.contact_email }}</a>{% else %}<p>Our email address will be shared here soon.</p>{% endif %}</div></div>
+<div class="contact-method"><span class="icon-disc" aria-hidden="true">{% include 'includes/icon.html' with icon='people' %}</span><div><h3>Find our community online</h3>{% if club.social_url %}<a href="{{ club.social_url }}" target="_blank" rel="noopener noreferrer">Visit our social page &nearr;</a>{% else %}<p>Our social link will be shared here soon.</p>{% endif %}</div></div>
+</section>
+<section class="contact-form-panel" aria-labelledby="message-title"><p class="eyebrow">Start a conversation</p><h2 id="message-title">Send us a message</h2>
+{% if preview_mode %}<p class="contact-preview">This form is in preview mode. Messages are not sent yet; use the contact links to reach us.</p>{% endif %}
+{% if form_available %}<form method="post" action="{% url 'core:contact' %}" novalidate>{% csrf_token %}
+{% if form.errors %}<div class="contact-errors" role="alert"><p>Please check your message.</p>{{ form.non_field_errors }}{% if form.website.errors %}<p>Please try again without filling the hidden field.</p>{% endif %}</div>{% endif %}
+{{ form.website }}
+{% for field in form.visible_fields %}<div class="contact-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}
+<button class="button contact-submit" type="submit">{% if preview_mode %}Preview message{% else %}Send message{% endif %} <span aria-hidden="true">&rarr;</span></button>
+<p class="contact-privacy">{% if preview_mode %}Preview submissions are not saved or emailed.{% else %}Your name, email, and message will be emailed to the club so we can reply.{% endif %}</p>
+</form>{% else %}<p class="contact-unavailable">Please reach out using our email or social link. The message form will be available here once it is ready.</p>{% endif %}
+</section></div>
+<section class="contact-visit" aria-labelledby="visit-title"><div><p class="eyebrow">Come as you are</p><h2 id="visit-title">Prefer to come along?</h2><p>Find the latest dates and meeting places on our Events page.</p><a class="button" href="{% url 'events:list' %}#upcoming">See upcoming gatherings &rarr;</a></div><div class="contact-meetings"><span class="icon-disc" aria-hidden="true">{% include 'includes/icon.html' with icon='calendar' %}</span><h3>When we meet</h3>{% if club.meeting_information %}<p>{{ club.meeting_information|linebreaksbr }}</p>{% else %}<p>Meeting details will be announced with each gathering. Check Events before you visit.</p>{% endif %}</div></section>
+<section class="contact-faq" aria-labelledby="faq-title"><div class="section-heading"><h2 id="faq-title">A few things you might be wondering</h2></div><div class="faq-list">{% for faq in faqs %}<details><summary>{{ faq.question }}<span aria-hidden="true">+</span></summary><div>{{ faq.answer|linebreaks }}</div></details>{% empty %}<details><summary>Where can I find the next gathering?<span aria-hidden="true">+</span></summary><div><p>Visit our <a href="{% url 'events:list' %}">Events page</a> for dates, meeting places, and the latest details.</p></div></details><details><summary>How can I get to know the club?<span aria-hidden="true">+</span></summary><div><p>Explore <a href="{% url 'core:our_story' %}">Our Story</a> or use the contact links above to ask about your first visit.</p></div></details>{% endfor %}</div></section>
+</div>{% endblock %}

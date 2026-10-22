@@ -13,7 +13,13 @@ configuration, and saved mockups. The homepage uses local Lora/Source Sans 3 fon
 active photo slides, upcoming events, history excerpts, albums, FAQs, and contact
 links. Our Story at `/our-story/` includes a wheel that opens a horizontal history timeline, keyboard
 access, a chapter selector, purpose and beliefs, and active organizer profiles.
-Event/album detail pages, contact-form handling, sitemap, and robots are still planned.
+Events at `/events/` includes upcoming gatherings, category-filtered past albums, and pagination.
+Public event details and album pages are available under `/events/<slug>/` and
+`/events/<slug>/photos/`. Draft events, unpublished albums, and inactive photos are hidden.
+Get in Touch at `/contact/` includes a validated message form, direct contact links,
+meeting information, and FAQs. Delivery requires explicit email configuration;
+local development otherwise uses a clearly labelled non-sending preview.
+Sitemap and robots are still planned.
 Responsive image derivatives and orphaned-file cleanup remain future work.
 
 ## App responsibilities and planned models
@@ -30,7 +36,7 @@ Responsive image derivatives and orphaned-file cleanup remain future work.
 
 `core` owns Home, Our Story, Get in Touch, shared club information, and static-page
 sitemap entries. Use Django forms for contact validation. Contact delivery is a
-separate integration; use a local console email backend during development and
+separate integration; use a non-sending preview during development and
 configure actual delivery before presenting the form as operational in production.
 No contact-message database is needed initially.
 

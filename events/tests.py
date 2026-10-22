@@ -84,3 +84,72 @@ class EventAdminTests(TestCase):
             photo = EventPhoto.objects.get()
             self.assertEqual(photo.album.event, event)
             self.assertTrue(photo.image.storage.exists(photo.image.name))
+
+class EventPageTests(TestCase):
+    def setUp(self):
+        now = timezone.now()
+        self.future = Event.objects.create(title='Future gathering', slug='future', status='published', starts_at=now + timedelta(days=2))
+        self.draft = Event.objects.create(title='Private draft', slug='draft', starts_at=now + timedelta(days=1))
+        self.past = Event.objects.create(title='Past gathering', slug='past', status='published', starts_at=now - timedelta(days=2), category='outdoors')
+        self.album = EventAlbum.objects.create(event=self.past, title='Outdoor memories', is_published=True)
+
+    def test_list_filters_and_publication(self):
+        response = self.client.get(reverse('events:list'))
+        self.assertContains(response, 'Future gathering')
+        self.assertContains(response, 'Outdoor memories')
+        self.assertNotContains(response, 'Private draft')
+        response = self.client.get(reverse('events:list'), {'category': 'bible-study'})
+        self.assertNotContains(response, 'Outdoor memories')
+        self.assertContains(response, 'Future gathering')
+        response = self.client.get(reverse('events:list'), {'category': 'invalid', 'page': 'invalid'})
+        self.assertContains(response, 'Outdoor memories')
+
+    def test_details_drafts_cancellations_and_undated_events(self):
+        self.assertEqual(self.client.get(reverse('events:detail', args=['draft'])).status_code, 404)
+        self.assertEqual(self.client.get(reverse('events:detail', args=['missing'])).status_code, 404)
+        self.future.status = 'cancelled'
+        self.future.save()
+        self.assertContains(self.client.get(reverse('events:detail', args=['future'])), 'This event has been cancelled.')
+        self.assertContains(self.client.get(reverse('events:list')), 'Cancelled')
+        self.future.starts_at = None
+        self.future.status = 'published'
+        self.future.save()
+        self.assertContains(self.client.get(reverse('events:detail', args=['future'])), 'To be confirmed')
+
+    def test_album_only_exposes_active_photos_and_published_past_events(self):
+        EventPhoto.objects.create(album=self.album, image='demo/visible.jpg', alt_text='Visible photo', is_active=True)
+        EventPhoto.objects.create(album=self.album, image='demo/private.jpg', alt_text='Private photo')
+        url = reverse('events:album', args=['past'])
+        response = self.client.get(url)
+        self.assertContains(response, 'Visible photo')
+        self.assertNotContains(response, 'Private photo')
+        self.album.is_published = False
+        self.album.save()
+        self.assertEqual(self.client.get(url).status_code, 404)
+        self.album.is_published = True
+        self.album.save()
+        self.past.starts_at = timezone.now() + timedelta(days=3)
+        self.past.save()
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_ongoing_events_and_pagination(self):
+        ongoing = Event.objects.create(title='Happening now', slug='ongoing', status='published', starts_at=timezone.now()-timedelta(hours=1), ends_at=timezone.now()+timedelta(hours=1))
+        for i in range(9):
+            Event.objects.create(title=f'Upcoming {i}', slug=f'upcoming-{i}', status='published', starts_at=timezone.now()+timedelta(days=i+4))
+        response = self.client.get(reverse('events:list'))
+        self.assertContains(response, ongoing.title)
+        self.assertEqual(len(response.context['gatherings']), 7)
+        response = self.client.get(reverse('events:list'), {'gatherings': 2})
+        self.assertEqual(len(response.context['gatherings']), 4)
+        self.assertContains(response, 'Upcoming 8')
+
+    def test_empty_states_and_escaped_content(self):
+        self.future.description = '<script>alert(1)</script>'
+        self.future.save()
+        response = self.client.get(reverse('events:detail', args=['future']))
+        self.assertContains(response, '&lt;script&gt;')
+        self.assertNotContains(response, '<script>alert(1)</script>')
+        Event.objects.all().delete()
+        response = self.client.get(reverse('events:list'))
+        self.assertContains(response, 'Good things are ahead.')
+        self.assertContains(response, 'There are memories to be made.')

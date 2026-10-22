@@ -35,7 +35,7 @@ with sync_playwright() as playwright:
     page.set_viewport_size({'width': 375, 'height': 812})
     page.locator('.menu-toggle').click()
     assert page.locator('#primary-nav').is_visible()
-    page.locator('#primary-nav a[href="/#contact"]').click()
+    page.locator('#primary-nav a[href="/contact/"]').click()
     assert not page.locator('#primary-nav').is_visible()
     page.locator('.faq-list summary').first.click()
     assert page.locator('.faq-list details').first.get_attribute('open') is not None

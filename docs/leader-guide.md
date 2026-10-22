@@ -70,6 +70,36 @@ Upload an image and alt text on each milestone or organizer to replace its place
 Press the wheel to open the horizontal timeline, then scroll through the years or use
 the chapter selector. New milestones extend the timeline without crowding the wheel.
 Reduced-motion preferences are respected. Without JavaScript,
-all chapters remain readable in order. Events and contact still link to homepage
-sections until their dedicated pages are built. The generated
+all chapters remain readable in order. Events now links to `/events/`, with upcoming gatherings, category filters for
+past albums, event details, and photo pages. Get in Touch links to `/contact/`. The generated
 admin mockup is a visual reference, not the current Django admin theme.
+
+
+### Public Events pages
+
+Published upcoming, ongoing, and undated events appear on the Events page.
+Cancelled events retain a visible cancellation notice; draft events return 404.
+Dates display in the configured site timezone. Published albums appear only for
+past published events. Only active album photos are shown, in display order.
+Visitors can filter past albums by event category and browse additional pages.
+Photo links open the original image in a new tab. Update events, album covers,
+recaps, and photos through the existing admin screens; no new setup is needed.
+
+
+### Get in Touch
+
+The `/contact/` page uses the Club profile email, social URL, and meeting information,
+plus published FAQs and the first active homepage photo. Change those in admin.
+The development form runs in explicitly labelled preview mode: it validates input
+but does not save or send messages. In production the form stays unavailable until
+delivery is enabled; direct email and social links remain available.
+
+Before enabling delivery, configure `EMAIL_BACKEND` as
+`django.core.mail.backends.smtp.EmailBackend`, the provider's `EMAIL_HOST`,
+`EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, and a verified
+`DEFAULT_FROM_EMAIL` in the environment. Set a real Club profile contact email,
+verify delivery with the provider, then set `CONTACT_FORM_ENABLED=True`.
+Visitor addresses are used as Reply-To, not as the sender. Messages are emailed,
+not stored in a contact-message database. CSRF validation, a hidden spam field,
+and a one-minute session cooldown protect submissions; the cooldown is not a
+site-wide rate limit. Never put credentials in version control.

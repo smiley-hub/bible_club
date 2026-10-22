@@ -77,3 +77,11 @@ change club data or photos.
 storage and backups on the live host. Production also needs `DJANGO_DEBUG=False`,
 the actual domain in `DJANGO_ALLOWED_HOSTS`, HTTPS, a production application
 server, and explicit static/media serving. Django's development server is local only.
+
+The Events page is available at `/events/`, with upcoming gatherings, category-filtered
+past albums, event details, and photo galleries managed through Django admin.
+Browser verification: `python scripts/check_events.py` with the local server running.
+
+Get in Touch: `/contact/`. Local submissions are preview-only until email delivery
+is configured and enabled (see `docs/leader-guide.md`). Run
+`python scripts/check_contact.py` against the local server for browser checks.
