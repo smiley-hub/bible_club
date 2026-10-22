@@ -29,3 +29,8 @@
 .road-ending{font-size:24px;padding-top:36px;color:var(--ink)}
 .road-ending small{font-size:15px;margin-top:9px}
 @media(max-width:760px){.road-toolbar label{font-size:22px}.journey-chapter{padding-right:20px}.road-date{font-size:30px}.chapter-card,.journey-chapter:nth-of-type(even) .chapter-card{padding:12px 12px 22px}.chapter-card h2{font-size:23px}.chapter-placeholder>p{font-size:18px}.chapter-placeholder img{width:42px}.chapter-story{font-size:15px;line-height:1.75}.road-ending{font-size:22px}.road-ending small{max-width:260px;margin:10px auto 0}}
+/* Botanical illustration echoes the approved invitation mockup. */
+.story-invitation{position:relative;isolation:isolate;overflow:hidden;padding-left:155px;min-height:180px}
+.story-invitation>.story-invitation-leaves{position:absolute;left:-10px;bottom:-16px;width:160px;height:180px;object-fit:contain;opacity:.4;pointer-events:none;z-index:-1}
+@media(max-width:760px){.story-invitation{padding:30px 26px 34px 85px}.story-invitation>.story-invitation-leaves{left:-34px;bottom:-5px;width:130px;height:165px;opacity:.28}.story-invitation>.button{font-size:15px;max-width:100%;margin-top:12px}.story-invitation h2{font-size:29px}}
+@media(max-width:360px){.story-invitation{padding-left:62px;padding-right:20px}.story-invitation h2{font-size:26px}}
