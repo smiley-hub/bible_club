@@ -54,29 +54,40 @@ with sync_playwright() as playwright:
     page.emulate_media(reduced_motion='reduce')
     page.goto(base_url + '/__slideshow_check', wait_until='networkidle')
     assert page.locator('[data-slide]:visible').count() == 1
-    assert page.locator('[data-pause]').inner_text() == 'Play'
-    page.locator('[data-next]').click()
-    assert page.locator('[data-slide]:visible img').get_attribute('alt') == 'Test slide 1'
-    page.locator('[data-previous]').click()
-    page.locator('[data-previous]').click()
-    assert page.locator('[data-slide]:visible img').get_attribute('alt') == 'Test slide 2'
-    page.locator('[data-go="0"]').click()
-    assert page.locator('[data-slide]:visible img').get_attribute('alt') == 'Test slide 0'
-    page.locator('[data-next]').focus()
+    toggle = page.locator('[data-photo-toggle]')
+    assert toggle.get_attribute('aria-label') == 'Resume photo slideshow'
+    assert page.locator('.slide-controls').count() == 0
+    toggle.focus()
     page.keyboard.press('ArrowRight')
     assert page.locator('[data-slide]:visible img').get_attribute('alt') == 'Test slide 1'
-    page.locator('[data-pause]').click()
-    assert page.locator('[data-pause]').inner_text() == 'Pause'
-    page.mouse.move(0, 0)
-    page.wait_for_timeout(6800)
+    page.keyboard.press('ArrowLeft')
+    page.keyboard.press('ArrowLeft')
     assert page.locator('[data-slide]:visible img').get_attribute('alt') == 'Test slide 2'
-    page.locator('[data-pause]').click()
-    assert page.locator('[data-pause]').inner_text() == 'Play'
+    page.keyboard.press('Enter')
+    assert toggle.get_attribute('aria-label') == 'Pause photo slideshow'
+    page.wait_for_timeout(6800)
+    assert page.locator('[data-slide]:visible img').get_attribute('alt') == 'Test slide 0'
+    toggle.click()
+    assert toggle.get_attribute('aria-label') == 'Resume photo slideshow'
+    page.wait_for_timeout(6800)
+    assert page.locator('[data-slide]:visible img').get_attribute('alt') == 'Test slide 0'
+    page.keyboard.press('Space')
+    assert toggle.get_attribute('aria-label') == 'Pause photo slideshow'
     page.emulate_media(reduced_motion='no-preference')
     page.reload(wait_until='networkidle')
-    assert page.locator('[data-pause]').inner_text() == 'Pause'
-    page.locator('[data-pause]').click()
-    assert page.locator('[data-pause]').inner_text() == 'Play'
+    assert toggle.get_attribute('aria-label') == 'Pause photo slideshow'
+    toggle.click()
+    assert toggle.get_attribute('aria-label') == 'Resume photo slideshow'
+    touch = browser.new_context(has_touch=True, viewport={'width':375,'height':812})
+    touch_page = touch.new_page()
+    touch_page.route('**/__slideshow_check', lambda route: route.fulfill(body=fixture, content_type='text/html'))
+    touch_page.goto(base_url + '/__slideshow_check', wait_until='networkidle')
+    touch_toggle = touch_page.locator('[data-photo-toggle]')
+    touch_toggle.tap()
+    assert touch_toggle.get_attribute('aria-label') == 'Resume photo slideshow'
+    touch_toggle.tap()
+    assert touch_toggle.get_attribute('aria-label') == 'Pause photo slideshow'
+    touch.close()
     no_js = browser.new_context(java_script_enabled=False, viewport={'width': 375, 'height': 812})
     fallback = no_js.new_page()
     fallback.goto(base_url, wait_until='networkidle')

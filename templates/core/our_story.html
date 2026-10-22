@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Our Story — {{ club.name|default:'METU Bible Club' }}{% endblock %}
 {% block description %}Explore the story of METU Bible Club, the chapters of our journey, and the people who welcome you.{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'css/story.css' %}?v=horizontal-3"><script src="{% static 'js/story.js' %}?v=horizontal-3" defer></script>{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/story.css' %}?v=soft-sage-1"><script src="{% static 'js/story.js' %}?v=soft-sage-1" defer></script>{% endblock %}
 {% block content %}
 <div class="wrap story-page">
   <header class="story-intro"><p class="eyebrow">Our story</p><h1>Every chapter brought us here.</h1><p>Faith, friendship, and the moments that make a community.</p></header>
@@ -47,6 +47,6 @@
   <section class="story-organizers" aria-labelledby="organizers-title"><div class="story-section-title"><p class="eyebrow">A familiar face</p><h2 id="organizers-title">Meet the people who welcome you</h2></div><div class="organizers-grid">
     {% for organizer in organizers %}<article class="organizer-card">{% if organizer.image %}<img class="organizer-portrait" src="{{ organizer.image.url }}" alt="{{ organizer.alt_text }}" loading="lazy" width="500" height="400">{% else %}<div class="organizer-placeholder" aria-hidden="true">{% include 'includes/icon.html' with icon='people' %}<span>A face to know</span></div>{% endif %}<h3>{{ organizer.name }}</h3><p>{{ organizer.role }}</p></article>{% empty %}<p class="organizer-empty">Introductions are on their way. In the meantime, <a href="{% url 'core:contact' %}">get in touch</a> to ask about visiting.</p>{% endfor %}
   </div></section>
-  <section class="contact-banner story-invitation"><img class="story-invitation-leaves" src="{% static 'images/story-leaves.svg' %}" width="190" height="190" alt="" aria-hidden="true"><div><p class="eyebrow">The next chapter</p><h2>There is a place for you in this story.</h2><p>Come along, ask a question, and get to know us.</p></div><a class="button" href="{% url 'core:home' %}#gatherings">Find our next gathering <span aria-hidden="true">{% include 'includes/arrow.html' with direction='right' %}</span></a></section>
+  <section class="contact-banner story-invitation"><img class="story-invitation-leaves" src="{% static 'images/story-leaves.svg' %}" width="190" height="190" alt="" aria-hidden="true"><div><p class="eyebrow">The next chapter</p><h2>There is a place for you in this story.</h2><p>Come along, ask a question, and get to know us.</p></div><a class="button button-outline" href="{% url 'core:home' %}#gatherings">Find our next gathering <span aria-hidden="true">{% include 'includes/arrow.html' with direction='right' %}</span></a></section>
 </div>
 {% endblock %}

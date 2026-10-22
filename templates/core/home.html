@@ -7,7 +7,7 @@
       <p class="eyebrow">Faith. Friendship. Community.</p>
       <h1 id="welcome-title">A place to belong.<br>A faith to explore.</h1>
       <p class="intro">{% if club.welcome_text %}{{ club.welcome_text }}{% else %}Explore the Bible, ask honest questions, and make room for friendship. Discover life together at METU Bible Club.{% endif %}</p>
-      <a class="button" href="#gatherings">Find our next gathering <span aria-hidden="true">{% include 'includes/arrow.html' with direction='right' %}</span></a>
+      <a class="button button-outline" href="#gatherings">Find our next gathering <span aria-hidden="true">{% include 'includes/arrow.html' with direction='right' %}</span></a>
       <a class="quiet-link" href="#first-visit">New here? Start here <span aria-hidden="true">{% include 'includes/arrow.html' with direction='down-right' %}</span></a>
     </div>
     <div class="hero-visual" {% if slides %}data-slideshow role="region" aria-roledescription="carousel" aria-label="Life at our club"{% endif %}>
@@ -25,12 +25,7 @@
       </div>
       {% endfor %}
       {% if slides|length > 1 %}
-      <div class="slide-controls" data-controls hidden>
-        <button type="button" data-previous aria-label="Previous photo">{% include 'includes/arrow.html' with direction='left' %}</button>
-        <div class="slide-dots" aria-label="Choose a photo">{% for slide in slides %}<button type="button" data-go="{{ forloop.counter0 }}" aria-label="Show photo {{ forloop.counter }}" {% if forloop.first %}aria-current="true"{% endif %}></button>{% endfor %}</div>
-        <button type="button" data-next aria-label="Next photo">{% include 'includes/arrow.html' with direction='right' %}</button>
-        <button type="button" class="pause-button" data-pause>Pause</button>
-      </div>
+      <button type="button" class="photo-toggle" data-photo-toggle aria-label="Pause photo slideshow" title="Click to pause the slideshow" hidden></button>
       <p class="sr-only" data-slide-status aria-live="polite" aria-atomic="true"></p>
       {% endif %}
     </div>
@@ -82,9 +77,10 @@
     {% endfor %}</div>
   </section>
 
-  <section class="contact-banner" id="contact" aria-labelledby="contact-title">
+  <section class="contact-banner hello-invitation" id="contact" aria-labelledby="contact-title">
+    <img class="hello-cross" src="{% static 'images/cross-line.svg' %}" width="170" height="220" alt="" aria-hidden="true">
     <div><p class="eyebrow">You are welcome here</p><h2 id="contact-title">Your first visit starts with hello.</h2><p>Have a question, or simply want to say hi? We would love to hear from you.</p></div>
-    <div class="contact-actions">{% if club.contact_email %}<a class="button" href="mailto:{{ club.contact_email }}">Say hello <span aria-hidden="true">{% include 'includes/arrow.html' with direction='right' %}</span></a><a class="contact-email" href="mailto:{{ club.contact_email }}">{{ club.contact_email }}</a>{% endif %}{% if club.social_url %}<a class="{% if club.contact_email %}text-link{% else %}button{% endif %}" href="{{ club.social_url }}" target="_blank" rel="noopener noreferrer">Find us online <span aria-hidden="true">{% include 'includes/arrow.html' with direction='up-right' %}</span></a>{% endif %}{% if not club.contact_email and not club.social_url %}<p class="contact-pending">Club contact details will be shared here soon.</p>{% endif %}</div>
+    <div class="contact-actions">{% if club.contact_email %}<a class="button button-outline" href="mailto:{{ club.contact_email }}">Say hello <span aria-hidden="true">{% include 'includes/arrow.html' with direction='right' %}</span></a><a class="contact-email" href="mailto:{{ club.contact_email }}">{{ club.contact_email }}</a>{% endif %}{% if club.social_url %}<a class="{% if club.contact_email %}text-link{% else %}button{% endif %}" href="{{ club.social_url }}" target="_blank" rel="noopener noreferrer">Find us online <span aria-hidden="true">{% include 'includes/arrow.html' with direction='up-right' %}</span></a>{% endif %}{% if not club.contact_email and not club.social_url %}<p class="contact-pending">Club contact details will be shared here soon.</p>{% endif %}</div>
   </section>
 </div>
 {% endblock %}

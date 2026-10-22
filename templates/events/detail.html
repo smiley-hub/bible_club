@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}{{ event.title }} — {{ club.name|default:'METU Bible Club' }}{% endblock %}
 {% block description %}{{ event.description|truncatewords:28 }}{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'css/events.css' %}?v=1">{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/events.css' %}?v=soft-sage-1">{% endblock %}
 {% block content %}<div class="wrap events-page event-detail-page"><a class="text-link event-back" href="{% url 'events:list' %}">{% include 'includes/arrow.html' with direction='left' %} All events</a>
 <header class="events-intro"><p class="eyebrow">{{ event.get_category_display }}</p><h1>{{ event.title }}</h1>{% if event.status == 'cancelled' %}<p class="event-status-notice">This event has been cancelled.</p>{% elif is_past %}<p>This gathering has taken place. Thank you for being part of our story.</p>{% endif %}</header>
 <div class="event-detail-layout"><article class="event-main">{% if event.image %}<img class="event-detail-cover" src="{{ event.image.url }}" alt="{{ event.alt_text }}" width="1000" height="650">{% endif %}<h2>About this gathering</h2><div class="event-prose">{% if event.description %}{{ event.description|linebreaks }}{% else %}<p>More details will be shared here soon.</p>{% endif %}</div>{% if album %}<a class="button" href="{% url 'events:album' event.slug %}">View memories from this event {% include 'includes/arrow.html' with direction='right' %}</a>{% endif %}</article>

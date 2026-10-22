@@ -127,8 +127,8 @@ extra empty apps simply to match a larger-project structure.
 
 ## Interaction and storage requirements
 
-- Slideshow: leader-controlled order and visibility, previous/next buttons,
-  position controls, pause for autoplay, reduced-motion support, and a useful
+- Slideshow: leader-controlled order and visibility, click/tap photo to pause or
+  resume, keyboard playback/navigation, reduced-motion support, and a useful
   single-image/empty state. Load the first photo promptly and defer later images.
 - History wheel: click/tap and keyboard controls; do not require dragging. Render
   the history in HTML so it remains readable without JavaScript.

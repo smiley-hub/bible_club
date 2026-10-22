@@ -57,7 +57,8 @@ must be handled separately. Back up the database and media folder together.
 
 The admin editing workflow and public homepage work. Active homepage slides
 appear in display order; with two or more, visitors get arrows, position controls,
-and autoplay with a pause button. Reduced-motion preferences disable autoplay
+and autoplay that pauses or resumes when a visitor clicks or taps the photo.
+Keyboard users can use Enter/Space to toggle playback and arrow keys to change photos. Reduced-motion preferences disable autoplay
 initially. With no active slides, a designed placeholder appears instead.
 
 The homepage shows the next published gathering, published history excerpts,

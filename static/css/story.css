@@ -12,7 +12,7 @@
 .timeline-navigation{margin:24px 0 18px}
 .timeline-navigation>div{flex-shrink:0}
 .timeline-navigation button{background:#fffdf8;transition:background .2s,box-shadow .2s}
-.timeline-navigation button:not(:disabled):hover{background:var(--green);color:var(--paper);box-shadow:0 4px 12px #19362e15}
+.timeline-navigation button:not(:disabled):hover{background:var(--action);color:var(--ink);box-shadow:0 4px 12px #19362e15}
 .journey-chapters{padding-bottom:32px;scrollbar-color:#a7b496 #eeeee5}
 .journey-chapter{padding-right:28px}
 .journey-chapter:before{height:1px;background:#bdc5ae}
