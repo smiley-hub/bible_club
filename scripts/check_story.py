@@ -40,28 +40,50 @@ with sync_playwright() as p:
     # Fixture tests leave all saved club content untouched.
     page.route('**/__story_check', lambda route: route.fulfill(body=fixture(11), content_type='text/html'))
     page.goto(base + '/__story_check', wait_until='networkidle')
-    assert page.locator('[data-chapter]:visible').count() == 1
-    assert page.locator('[data-history-previous]').is_disabled()
-    page.locator('[data-history-next]').click()
-    assert page.locator('[data-chapter]:visible h2').inner_text() == 'Chapter 2'
-    page.locator('[data-chapter-button="2"]').click()
-    assert page.locator('[data-chapter]:visible h2').inner_text() == 'Chapter 3'
-    page.keyboard.press('End')
-    assert page.locator('[data-chapter]:visible h2').inner_text() == 'Chapter 11'
-    assert page.locator('[data-history-next]').is_disabled()
-    assert page.locator('[data-chapter-button]:visible').count() == 3
+    assert not page.locator('[data-history-road]').is_visible()
+    page.locator('[data-open-journey]').focus()
+    page.keyboard.press('Enter')
+    assert page.locator('[data-open-journey]').get_attribute('aria-expanded') == 'true'
+    assert page.locator('[data-chapter]:visible').count() == 11
+    page.locator('[data-open-journey]').click()
+    page.wait_for_timeout(700)
+    assert not page.locator('[data-history-road]').is_visible()
+    assert page.locator('[data-open-journey]').get_attribute('aria-expanded') == 'false'
+    assert page.locator('[data-open-journey]').evaluate('(el) => el === document.activeElement')
+    page.keyboard.press('Enter')
+    assert page.locator('[data-chapter]:visible').count() == 11
+    page.locator('[data-chapter-select]').select_option('chapter-11')
+    page.wait_for_timeout(1200)
+    assert page.locator('#chapter-11').evaluate('(el) => el === document.activeElement')
+    assert page.locator('#chapter-11').evaluate('(el) => el.getBoundingClientRect().top < innerHeight')
+    assert page.locator('[data-timeline]').evaluate('(el) => el.scrollLeft > 0')
+    assert page.locator('[data-timeline-next]').is_disabled()
+    page.locator('[data-timeline]').focus()
     page.keyboard.press('Home')
-    assert page.locator('[data-chapter]:visible h2').inner_text() == 'Chapter 1'
-    page.locator('[data-chapter-select]').select_option('8')
-    assert page.locator('[data-chapter]:visible h2').inner_text() == 'Chapter 9'
+    page.wait_for_timeout(1000)
+    assert page.locator('[data-timeline-previous]').is_disabled()
+    page.locator('[data-timeline-next]').click()
+    page.wait_for_timeout(1000)
+    assert page.locator('[data-timeline]').evaluate('(el) => el.scrollLeft > 0')
+    for width in [320, 375, 768, 1024, 1440]:
+        page.set_viewport_size({'width': width, 'height': 900})
+        assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'Open road overflow at {width}'
     page.emulate_media(reduced_motion='reduce')
-    assert page.locator('[data-wheel-orbit]').evaluate('(el) => getComputedStyle(el).transitionDuration') == '0s'
+    assert page.locator('[data-history-road]').evaluate('(el) => getComputedStyle(el).animationName') == 'none'
+    page.locator('[data-chapter-select]').select_option('chapter-1')
+    page.screenshot(path=str(output / 'road-desktop.png'), full_page=True)
+    page.set_viewport_size({'width':375,'height':812})
+    page.screenshot(path=str(output / 'road-mobile.png'), full_page=True)
+
+    page.locator('[data-open-journey]').click()
+    assert not page.locator('[data-history-road]').is_visible()
+    page.locator('[data-open-journey]').click()
+    assert page.locator('[data-chapter]:visible').count() == 11
 
     page.unroute('**/__story_check')
     page.route('**/__story_check', lambda route: route.fulfill(body=fixture(1), content_type='text/html'))
     page.goto(base + '/__story_check', wait_until='networkidle')
-    assert page.locator('[data-history-next]').is_disabled()
-    assert page.locator('[data-history-previous]').is_disabled()
+    page.locator('[data-open-journey]').click()
     assert page.locator('[data-chapter]:visible').count() == 1
     page.unroute('**/__story_check')
     page.route('**/__story_check', lambda route: route.fulfill(body=fixture(0), content_type='text/html'))
@@ -76,5 +98,5 @@ with sync_playwright() as p:
     assert not fallback.locator('[data-journey-nav]').is_visible()
     assert not errors, errors
     browser.close()
-print('Story checks passed: responsive layout, navigation, wheel selection, keyboard controls, long history, one/zero chapters, reduced motion, no-JavaScript fallback.')
+print('Story checks passed: responsive layout, navigation, wheel opening, keyboard controls, horizontal scrolling, long history, one/zero chapters, reduced motion, no-JavaScript fallback.')
 print(f'Screenshots: {output}')

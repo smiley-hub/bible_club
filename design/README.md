@@ -9,7 +9,7 @@ Replace sample content with verified club information before publishing the site
 - Warm cream, forest green, and muted gold.
 - Lora headings and Source Sans 3 body text.
 - Public pages: Home, Our Story, Events, Event Details, Photo Album, Get in Touch.
-- A visitor-controlled history wheel with previous/next controls.
+- A clickable wheel that opens a horizontal, scrollable timeline with year markers.
 - Upcoming events and photo albums from past events.
 - A private leader area for content editing, built on Django admin.
 
@@ -23,6 +23,6 @@ Replace sample content with verified club information before publishing the site
 
 The admin content workflow and responsive homepage are implemented. The homepage
 uses local Lora/Source Sans 3, leader-managed slides, and published club content.
-Our Story now includes the interactive history wheel, purpose/beliefs, and organizers.
+Our Story now includes the expandable history road, purpose/beliefs, and organizers.
 Dedicated event, album, and contact pages remain planned.
 Do not regenerate or edit the approved mockups unless requested.

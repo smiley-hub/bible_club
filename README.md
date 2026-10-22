@@ -6,7 +6,7 @@ history milestones, organizers, FAQs, events, and photo albums. The public site
 now includes a responsive homepage using locally hosted Lora and Source Sans 3,
 an accessible photo slideshow, next-gathering information, history excerpts,
 published albums, FAQs, and contact links. Our Story at `/our-story/` includes
-an interactive history wheel, purpose and beliefs, and organizer profiles.
+a wheel that opens a horizontal history timeline, purpose and beliefs, and organizer profiles.
 Event and contact navigation currently links back to working homepage sections.
 
 See [the structure review and implementation plan](docs/architecture.md) for

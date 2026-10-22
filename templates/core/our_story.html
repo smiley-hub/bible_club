@@ -2,31 +2,39 @@
 {% load static %}
 {% block title %}Our Story — {{ club.name|default:'METU Bible Club' }}{% endblock %}
 {% block description %}Explore the story of METU Bible Club, the chapters of our journey, and the people who welcome you.{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'css/story.css' %}"><script src="{% static 'js/story.js' %}" defer></script>{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/story.css' %}?v=horizontal-2"><script src="{% static 'js/story.js' %}?v=horizontal-2" defer></script>{% endblock %}
 {% block content %}
 <div class="wrap story-page">
   <header class="story-intro"><p class="eyebrow">Our story</p><h1>Every chapter brought us here.</h1><p>Faith, friendship, and the moments that make a community.</p></header>
   {% if milestones %}
   <section class="journey" data-journey aria-label="Our history">
-    <div class="journey-navigation" data-journey-nav hidden>
-      <p class="wheel-instruction">Choose a year. Discover a chapter.</p>
-      <div class="history-wheel">
-        <div class="wheel-ring" aria-hidden="true"></div>
-        <div class="wheel-center" aria-hidden="true"><img src="{% static 'images/book.svg' %}" width="82" height="70" alt=""><span>Our journey</span><i></i><small data-wheel-year></small></div>
-        <div class="wheel-orbit" data-wheel-orbit role="group" aria-label="Choose a history milestone">
-          {% for milestone in milestones %}<button type="button" class="wheel-stop" data-chapter-button="{{ forloop.counter0 }}" data-year="{{ milestone.year }}" aria-controls="chapter-{{ milestone.pk }}" aria-label="{{ milestone.year }}: {{ milestone.title }}" aria-pressed="false"><span>{{ milestone.year }}</span></button>{% endfor %}
-        </div>
-      </div>
-      <div class="journey-controls"><button type="button" class="journey-previous" data-history-previous aria-label="Previous chapter"><span aria-hidden="true">←</span> Previous</button><span data-chapter-counter></span><button type="button" class="button" data-history-next aria-label="Next chapter">Next <span aria-hidden="true">→</span></button></div>
-      <label class="chapter-select-label" for="chapter-select">Jump to a chapter</label>
-      <select id="chapter-select" data-chapter-select>{% for milestone in milestones %}<option value="{{ forloop.counter0 }}">{{ milestone.year }} — {{ milestone.title }}</option>{% endfor %}</select>
-      <p class="sr-only" data-history-status aria-live="polite" aria-atomic="true"></p>
+    <div class="journey-gate" data-journey-nav hidden>
+      <p class="wheel-instruction">Every journey starts with a single step.</p>
+      <button class="history-wheel" type="button" data-open-journey aria-expanded="false" aria-controls="history-road">
+        <span class="wheel-ring" aria-hidden="true"></span>
+        <span class="wheel-center"><img src="{% static 'images/book.svg' %}" width="76" height="65" alt=""><span>Our journey</span><small>Unroll our story <span aria-hidden="true">&#8595;</span></small></span>
+      </button>
+      <p class="journey-hint">Press the wheel, then scroll through the years.</p>
     </div>
-    <div class="journey-chapters">
+    <div id="history-road" class="history-road" data-history-road>
+      <div class="road-toolbar" data-road-toolbar hidden>
+        <label for="chapter-select">Take a step back in time</label>
+        <select id="chapter-select" data-chapter-select>{% for milestone in milestones %}<option value="chapter-{{ milestone.pk }}">{{ milestone.year }} &mdash; {{ milestone.title }}</option>{% endfor %}</select>
+      </div>
+      <div class="timeline-navigation" data-timeline-navigation hidden>
+        <p id="timeline-help">Swipe left to move forward through the years.</p>
+        <div><button type="button" data-timeline-previous aria-label="Previous chapter">&#8592;</button><button type="button" data-timeline-next aria-label="Next chapter">&#8594;</button></div>
+      </div>
+      <div class="journey-chapters" data-timeline tabindex="0" role="region" aria-label="Club history timeline" aria-describedby="timeline-help">
       {% for milestone in milestones %}<article class="journey-chapter" id="chapter-{{ milestone.pk }}" data-chapter aria-labelledby="chapter-title-{{ milestone.pk }}">
+        <span class="road-date">{{ milestone.year }}</span>
+        <div class="chapter-card">
         {% if milestone.image %}<img class="chapter-image" src="{{ milestone.image.url }}" alt="{{ milestone.alt_text }}" width="800" height="520" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>{% else %}<div class="chapter-placeholder" aria-hidden="true"><span>{{ milestone.year }}</span><img src="{% static 'images/book.svg' %}" width="78" height="66" alt=""><p>One chapter.<br>A part of our story.</p></div>{% endif %}
         <p class="eyebrow">Chapter {{ forloop.counter|stringformat:'02d' }}</p><h2 id="chapter-title-{{ milestone.pk }}">{{ milestone.title }}</h2><span class="chapter-date">{{ milestone.year }}</span><div class="chapter-story">{{ milestone.story|linebreaks }}</div>
+        </div>
       </article>{% endfor %}
+      </div>
+      <p class="road-ending">And the story continues. <small>There is room for the chapters still to come.</small></p>
     </div>
   </section>
   {% else %}<section class="story-awaiting"><img src="{% static 'images/book.svg' %}" width="76" height="65" alt=""><h2>Our story is still unfolding.</h2><p>We are gathering the stories and photographs that tell our journey. Come back soon to explore them.</p><a class="text-link" href="{% url 'core:home' %}#contact">Get to know us <span aria-hidden="true">→</span></a></section>{% endif %}

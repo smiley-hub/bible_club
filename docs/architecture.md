@@ -11,8 +11,8 @@ content models and migrations, leader permissions, admin content/photo editing,
 upload validation, publication querysets, a responsive homepage, static/media
 configuration, and saved mockups. The homepage uses local Lora/Source Sans 3 fonts,
 active photo slides, upcoming events, history excerpts, albums, FAQs, and contact
-links. Our Story at `/our-story/` includes a rotating history wheel, keyboard
-navigation, a chapter selector, purpose and beliefs, and active organizer profiles.
+links. Our Story at `/our-story/` includes a wheel that opens a horizontal history timeline, keyboard
+access, a chapter selector, purpose and beliefs, and active organizer profiles.
 Event/album detail pages, contact-form handling, sitemap, and robots are still planned.
 Responsive image derivatives and orphaned-file cleanup remain future work.
 

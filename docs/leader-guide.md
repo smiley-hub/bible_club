@@ -67,8 +67,9 @@ history wheel, purpose/beliefs from Club profiles, and active organizer cards.
 History milestones follow display order (lower first); set that order to match
 the chronology you want visitors to follow. Only published milestones appear.
 Upload an image and alt text on each milestone or organizer to replace its placeholder.
-The wheel supports taps, previous/next, arrow keys, and a chapter selector. More
-than eight chapters are grouped into successive wheel sections. Without JavaScript,
+Press the wheel to open the horizontal timeline, then scroll through the years or use
+the chapter selector. New milestones extend the timeline without crowding the wheel.
+Reduced-motion preferences are respected. Without JavaScript,
 all chapters remain readable in order. Events and contact still link to homepage
 sections until their dedicated pages are built. The generated
 admin mockup is a visual reference, not the current Django admin theme.

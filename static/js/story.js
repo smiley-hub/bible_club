@@ -1,60 +1,99 @@
 (() => {
-  'use strict';
   const journey = document.querySelector('[data-journey]');
   if (!journey) return;
-  const chapters = Array.from(journey.querySelectorAll('[data-chapter]'));
-  const buttons = Array.from(journey.querySelectorAll('[data-chapter-button]'));
-  if (!chapters.length || buttons.length !== chapters.length) return;
-  const orbit = journey.querySelector('[data-wheel-orbit]');
-  const previous = journey.querySelector('[data-history-previous]');
-  const next = journey.querySelector('[data-history-next]');
-  const select = journey.querySelector('[data-chapter-select]');
-  const counter = journey.querySelector('[data-chapter-counter]');
-  const year = journey.querySelector('[data-wheel-year]');
-  const status = journey.querySelector('[data-history-status]');
-  let current = 0;
-
-  function show(index, announce = true) {
-    current = Math.max(0, Math.min(index, chapters.length - 1));
-    // Up to eight stops per wheel keeps long histories usable on phones.
-    const start = Math.floor(current / 8) * 8;
-    const count = Math.min(8, chapters.length - start);
-    const rotation = -(current - start) * 360 / count;
-    orbit.style.setProperty('--turn', `${rotation}deg`);
-    orbit.style.setProperty('--counter-turn', `${-rotation}deg`);
-    chapters.forEach((chapter, i) => { chapter.hidden = i !== current; });
-    buttons.forEach((button, i) => {
-      const visible = i >= start && i < start + count;
-      button.hidden = !visible;
-      button.setAttribute('aria-pressed', String(i === current));
-      if (visible) {
-        const angle = ((i - start) * 360 / count - 90) * Math.PI / 180;
-        button.style.left = `${50 + Math.cos(angle) * 42}%`;
-        button.style.top = `${50 + Math.sin(angle) * 42}%`;
-      }
-    });
-    previous.disabled = current === 0;
-    next.disabled = current === chapters.length - 1;
-    counter.textContent = `${current + 1} / ${chapters.length}`;
-    year.textContent = buttons[current].dataset.year;
-    select.value = String(current);
-    if (announce) status.textContent = `Chapter ${current + 1} of ${chapters.length}. ${buttons[current].getAttribute('aria-label')}`;
+  const road = journey.querySelector('[data-history-road]');
+  const opener = journey.querySelector('[data-open-journey]');
+  const chapters = [...journey.querySelectorAll('[data-chapter]')];
+  const selector = journey.querySelector('[data-chapter-select]');
+  const track = journey.querySelector('[data-timeline]');
+  const previous = journey.querySelector('[data-timeline-previous]');
+  const next = journey.querySelector('[data-timeline-next]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let folding;
+  function updateControls() {
+    previous.disabled = track.scrollLeft < 2;
+    next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
   }
-  buttons.forEach((button, index) => {
-    button.addEventListener('click', () => show(index));
-    button.addEventListener('keydown', (event) => {
-      const key = event.key;
-      if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(key)) return;
-      event.preventDefault();
-      const target = key === 'Home' ? 0 : key === 'End' ? chapters.length - 1 : current + (['ArrowRight', 'ArrowDown'].includes(key) ? 1 : -1);
-      show(target);
-      buttons[current].focus();
-    });
-  });
-  previous.addEventListener('click', () => { show(current - 1); if (previous.disabled) next.focus(); });
-  next.addEventListener('click', () => { show(current + 1); if (next.disabled) previous.focus(); });
-  select.addEventListener('change', () => show(Number(select.value)));
+  function goToChapter(chapter, focus = false) {
+    if (focus) {
+      chapter.tabIndex = -1;
+      chapter.focus({preventScroll:true});
+    }
+    track.scrollTo({left:chapter.offsetLeft, behavior:reduced.matches ? 'instant' : 'smooth'});
+    selector.value = chapter.id;
+  }
+  function step(direction) {
+    const index = chapters.reduce((closest, item, i) =>
+      Math.abs(item.offsetLeft - track.scrollLeft) < Math.abs(chapters[closest].offsetLeft - track.scrollLeft) ? i : closest, 0);
+    goToChapter(chapters[Math.max(0, Math.min(chapters.length - 1, index + direction))]);
+  }
+  function openJourney(scroll = true) {
+    if (folding) {
+      folding.cancel();
+      folding = null;
+    }
+    road.inert = false;
+    if (opener.getAttribute('aria-expanded') === 'true') return;
+    road.hidden = false;
+    journey.classList.add('is-open');
+    opener.setAttribute('aria-expanded', 'true');
+    opener.querySelector('small').textContent = 'Fold our story';
+    journey.querySelector('.journey-hint').textContent = 'Swipe through the years, or press the wheel again to fold it back.';
+    updateControls();
+    if (scroll) road.scrollIntoView({behavior: reduced.matches ? 'instant' : 'smooth', block: 'start'});
+  }
+  function closeJourney() {
+    opener.focus({preventScroll:true});
+    opener.setAttribute('aria-expanded', 'false');
+    opener.querySelector('small').textContent = 'Unroll our story';
+    journey.querySelector('.journey-hint').textContent = 'Press the wheel, then scroll through the years.';
+    journey.classList.remove('is-open');
+    road.inert = true;
+    const finish = () => {
+      road.hidden = true;
+      folding?.cancel();
+      folding = null;
+      chapters.forEach(chapter => chapter.classList.remove('is-arriving'));
+    };
+    if (reduced.matches || !road.animate) {
+      finish();
+      return;
+    }
+    folding = road.animate([
+      {height:`${road.offsetHeight}px`, opacity:1, clipPath:'inset(0 0 0 0)', overflow:'hidden'},
+      {height:'0px', opacity:0, clipPath:'inset(0 0 100% 0)', overflow:'hidden'}
+    ], {duration:550, easing:'cubic-bezier(.4,0,.2,1)', fill:'forwards'});
+    folding.onfinish = finish;
+  }
   journey.classList.add('is-enhanced');
+  road.hidden = true;
   journey.querySelector('[data-journey-nav]').hidden = false;
-  show(0, false);
+  journey.querySelector('[data-road-toolbar]').hidden = false;
+  opener.addEventListener('click', () => {
+    if (opener.getAttribute('aria-expanded') === 'true') closeJourney();
+    else openJourney();
+  });
+  selector.addEventListener('change', () => goToChapter(document.getElementById(selector.value), true));
+  journey.querySelector('[data-timeline-navigation]').hidden = false;
+  previous.addEventListener('click', () => step(-1));
+  next.addEventListener('click', () => step(1));
+  track.addEventListener('scroll', updateControls, {passive:true});
+  track.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    if (event.key === 'Home') goToChapter(chapters[0]);
+    else if (event.key === 'End') goToChapter(chapters[chapters.length - 1]);
+    else step(event.key === 'ArrowRight' ? 1 : -1);
+  });
+  function followHash() {
+    const chapter = chapters.find(item => `#${item.id}` === location.hash);
+    if (chapter) {
+      openJourney(false);
+      requestAnimationFrame(() => goToChapter(chapter));
+    }
+  }
+  window.addEventListener('hashchange', followHash);
+  window.addEventListener('resize', updateControls);
+  if ('ResizeObserver' in window) new ResizeObserver(updateControls).observe(track);
+  followHash();
 })();
